@@ -52,37 +52,55 @@ export class AppComponent {
     this.startY = event.clientY;
     this.startLeft = this.signatureLeft;
     this.startTop = this.signatureTop;
+    console.log(this.currentPage);
   }
 
-  onMouseMove(event: MouseEvent) {
+  async onMouseMove(event: MouseEvent) {
     if (!this.isDragging) return;
-
+  
     const offsetX = event.clientX - this.startX;
     const offsetY = event.clientY - this.startY;
-
+  
     this.signatureLeft = this.startLeft + offsetX;
     this.signatureTop = this.startTop + offsetY;
+  
+    // Calcular a posição do carimbo em relação ao contêiner do PDF
+    const pdfWrapper = this.pdfWrapper.nativeElement;
+    const rect = pdfWrapper.getBoundingClientRect();
+    const pdfY = this.signatureTop - rect.top;
+  
+    // Calcular a altura de uma página do PDF
+    const pageHeight = rect.height / await this.getTotalNumberOfPages(); // Esperar a promessa ser resolvida
+  
+    // Calcular a página atual com base na posição vertical do carimbo
+    const currentPage = Math.ceil(pdfY / pageHeight);
+    const totalPages = await this.getTotalNumberOfPages(); // Esperar a promessa ser resolvida
+    if (currentPage >= 1 && currentPage <= totalPages) {
+      this.currentPage = currentPage;
+    }
+  
+    // Prevent default behavior to avoid text selection or other side effects
+    event.preventDefault();
+  }
+  
 
-    this.handleScroll(event.clientY);
+  async getTotalNumberOfPages(): Promise<number> {
+    try {
+      const pdfData = await fetch(this.pdfSrc);
+      const arrayBuffer = await pdfData.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(new Uint8Array(arrayBuffer));
+      return pdfDoc.getPageCount();
+    } catch (error) {
+      console.error('Error loading PDF:', error);
+      return 0; // Retorna 0 em caso de erro
+    }
   }
 
   onMouseUp(event: MouseEvent) {
     this.isDragging = false;
   }
 
-  handleScroll(y: number) {
-    const pdfWrapper = this.pdfWrapper.nativeElement;
-    const rect = pdfWrapper.getBoundingClientRect();
-    if (y < rect.top + this.scrollThreshold) {
-      pdfWrapper.scrollTop -= this.scrollThreshold;
-    } else if (y > rect.bottom - this.scrollThreshold) {
-      pdfWrapper.scrollTop += this.scrollThreshold;
-    }
-  }
-
   async criarAssinatura(): Promise<void> {
-
-
     try {
       const existingPdfBytes = await fetch(this.pdfSrc).then((res) =>
         res.arrayBuffer()

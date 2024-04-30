@@ -5,9 +5,17 @@
 .pdf-infor {
   width: 20%;
   min-width: 200px;
-  height: 650px; /* Definindo a altura da área de informações para ocupar toda a altura da viewport */
+  height: 95vh;
   overflow: hidden;
   border: solid;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: 3rem;
+  .assinar{
+    width: 120px;
+    height: 30px;
+  }
 }
 
 .pdf-container {
@@ -32,12 +40,12 @@
   left: 50px; /* posição inicial */
   width: 222px; /* largura inicial */
   height: 66px; /* altura inicial */
-   cursor: move;
+  cursor: move;
 }
 
 .pdf-wrapper {
-    width: 100%;
-    height: 100%; /* Definindo a altura como 100% para ocupar toda a altura do contêiner */
-    overflow: hidden;
-    padding: 10px;
+  width: 100%;
+  height: 100%; /* Definindo a altura como 100% para ocupar toda a altura do contêiner */
+  overflow: hidden;
+  padding: 10px;
 }

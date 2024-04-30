@@ -5,13 +5,16 @@
     (mouseup)="onMouseUp($event)"
   >
     <div class="pdf-wrapper" #pdfWrapper>
-      <pdf-viewer
-        [src]="pdfSrc"
-        [render-text]="true"
-        [original-size]="false"
-        [page]="selectedPage"
-        style="width: 100%; height: 100%"
-      ></pdf-viewer>
+      <div *ngIf="isLoading">Carregando...</div>
+      <div *ngIf="!isLoading">
+        <pdf-viewer
+          [src]="pdfSrc"
+          [page]="currentPage"
+          [render-text]="true"
+          [original-size]="false"
+          style="width: 100%; height: 800px"
+        ></pdf-viewer>
+      </div>
     </div>
 
     <div
@@ -20,6 +23,7 @@
       (mousedown)="onMouseDown($event)"
     >
       <div
+      *ngIf="!isLoading"
         class="signature-box"
         [style.left.px]="signatureLeft"
         [style.top.px]="signatureTop"
@@ -30,6 +34,6 @@
     </div>
   </div>
   <div class="pdf-infor">
-    <button (click)="assinar()">Assinar</button>
+    <button (click)="criarAssinatura()" class="assinar">Assinar</button>
   </div>
 </div>
